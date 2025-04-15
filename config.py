@@ -3,8 +3,8 @@ import random
 
 class Config:
     def __init__(self):
-        self.__screen_width = 1400
-        self.__screen_height = 900
+        self.__screen_width = 1300
+        self.__screen_height = 850
 
         self.__background_tile_size = 16
         self.__road_tile_size = 64
@@ -16,10 +16,10 @@ class Config:
         self.__road_grid_height = self.__screen_height // self.__road_tile_size
 
         self.__background_images_intro = [
-            pygame.image.load("game_assets/Environment/Desert.png").convert(),
-            pygame.image.load("game_assets/Environment/cactus.png").convert(),
-            pygame.image.load("game_assets/Environment/sand.png").convert(),
-            pygame.image.load("game_assets/Environment/rock.png").convert()
+            pygame.image.load("game_assets/Environment/green.png").convert(),
+            pygame.image.load("game_assets/Environment/flower.png").convert(),
+            pygame.image.load("game_assets/Environment/grass.png").convert(),
+            pygame.image.load("game_assets/Environment/hill.png").convert()
         ]
 
         self.__road_tile = pygame.image.load('game_assets/Environment/Summer_road (64 x 64).png').convert()
@@ -49,26 +49,30 @@ class Config:
     def draw(self, screen, event):
         max_y = min(self.__bg_grid_height, len(self.__background_grid))
         max_x = min(self.__bg_grid_width, len(self.__background_grid[0]))
-
-        if event == 'intro':
-            for y in range(max_y):
-                for x in range(max_x):
-                    tile = self.__background_grid[y][x]
-                    screen.blit(tile, (x * self.__background_tile_size, y * self.__background_tile_size))
-
-        elif event == 'mode1':
-            for y in range(max_y):
-                for x in range(max_x):
-                    tile = self.__background_grid[y][x]
-                    screen.blit(tile, (x * self.__background_tile_size, y * self.__background_tile_size))
-
-            center_screen_x = self.__screen_width // 2
-
-            road_width_pixels = self.__road_tile_size * 3
-            road_x_start = center_screen_x - (road_width_pixels // 2)
+        for y in range(max_y):
+            for x in range(max_x):
+                tile = self.__background_grid[y][x]
+                screen.blit(tile, (x * self.__background_tile_size, y * self.__background_tile_size))
+        if event == 'mode1':
+            road_x_start = 836
 
             for y in range(self.__road_grid_height):
-                for x in range(3):
-                    pos_x = road_x_start + (x * self.__road_tile_size)
-                    pos_y = y * self.__road_tile_size
-                    screen.blit(self.__road_tile, (pos_x, pos_y))
+                pos_x = road_x_start
+                pos_y = y * self.__road_tile_size
+                screen.blit(self.__road_tile, (pos_x, pos_y))
+
+        elif event == 'mode2':
+            center = self.__screen_width // 2
+            bot_lane_start = center + 10
+            player_lane_start = center + 340
+
+            for y in range(self.__road_grid_height):
+                # bot lane
+                bot_x = bot_lane_start
+                bot_y = y * self.__road_tile_size
+                screen.blit(self.__road_tile, (bot_x, bot_y))
+
+                # player lane
+                player_x = player_lane_start
+                player_y = y * self.__road_tile_size
+                screen.blit(self.__road_tile, (player_x, player_y))
