@@ -1,21 +1,21 @@
-import pygame
-from player import Player,Bot
+import pygame as pg
+from player import Player, Bot
 from config import Config
 from event import Mode1, Mode2
 
 
 class Game:
     def __init__(self):
-        pygame.init()
+        pg.init()
 
-        self.screen = pygame.display.set_mode((1300,850))
+        self.screen = pg.display.set_mode((1300, 850))
         self.bg = Config()
         self.__screen_width = self.bg.screen_width
         self.__screen_height = self.bg.screen_height
-        pygame.display.set_caption("Car Racing and Spelling Game")
-        self.font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 46)
-        self.clock = pygame.time.Clock()
-        self.car_images = [pygame.image.load(f"game_assets/Cars/Car{i}.png").convert_alpha() for i in range(1, 10)]
+        pg.display.set_caption("Car Racing and Spelling Game")
+        self.font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 46)
+        self.clock = pg.time.Clock()
+        self.car_images = [pg.image.load(f"game_assets/Cars/Car{i}.png").convert_alpha() for i in range(1, 10)]
         self.player = Player(name="Player 1", car_image=self.car_images)
         self.mode = None
         self.mode_num = None
@@ -28,10 +28,10 @@ class Game:
         box_height = int(self.__screen_height * 0.08)
         box_x = (self.__screen_width - box_width) // 2
         box_y = (self.__screen_height - box_height) // 2
-        input_box = pygame.Rect(box_x, box_y, box_width, box_height)
+        input_box = pg.Rect(box_x, box_y, box_width, box_height)
 
-        color_inactive = pygame.Color((235, 235, 235))
-        color_active = pygame.Color((175, 238, 238))
+        color_inactive = pg.Color((235, 235, 235))
+        color_active = pg.Color((175, 238, 238))
         color = color_inactive
         active = False
         text = ''
@@ -40,8 +40,8 @@ class Game:
 
         while True:
             self.bg.draw(self.screen, 'intro')
-            pygame.draw.rect(self.screen, color, input_box)
-            pygame.draw.rect(self.screen, (54, 69, 79), input_box, width=2)
+            pg.draw.rect(self.screen, color, input_box)
+            pg.draw.rect(self.screen, (54, 69, 79), input_box, width=2)
 
             cursor += 1
             if cursor >= 30:
@@ -56,13 +56,13 @@ class Game:
             self.screen.blit(txt_surface, (input_box.x + 5, input_box.y + 5))
             self.display_text("Enter player name:", box_x, box_y - 100)
 
-            pygame.display.flip()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
+            pg.display.flip()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
                     return None
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pg.MOUSEBUTTONDOWN:
                     if input_box.collidepoint(event.pos):
                         active = True
                         color = color_active
@@ -70,11 +70,11 @@ class Game:
                         active = False
                         color = color_inactive
 
-                if event.type == pygame.KEYDOWN:
+                if event.type == pg.KEYDOWN:
                     if active:
-                        if event.key == pygame.K_RETURN and text.strip():
+                        if event.key == pg.K_RETURN and text.strip():
                             return text.strip()
-                        elif event.key == pygame.K_BACKSPACE:
+                        elif event.key == pg.K_BACKSPACE:
                             text = text[:-1]
                         else:
                             text += event.unicode
@@ -86,17 +86,17 @@ class Game:
             self.display_text("Choose Mode:", 100, 200)
             self.display_text("Press 1: Mode 1 (Survival)", 100, 300)
             self.display_text("Press 2: Mode 2 (Race with Bot)", 100, 360)
-            pygame.display.flip()
+            pg.display.flip()
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
                     return None
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_1:
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_1:
                         self.mode_num = 1
                         return 1
-                    elif event.key == pygame.K_2:
+                    elif event.key == pg.K_2:
                         self.mode_num = 2
                         return 2
 
@@ -117,18 +117,18 @@ class Game:
             self.handle_events()
             self.mode.update(delta_time)
 
-            pygame.display.flip()
+            pg.display.flip()
             self.clock.tick(30)
 
     def handle_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 self.running = False
             else:
                 self.mode.event(event)
 
     def game_over_screen(self):
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((52, 73, 94))
         if self.mode_num == 1:
             self.display_text("Game Over", 350, 250)
             self.display_text(f"Score: {self.player.score}", 350, 300)
@@ -137,8 +137,8 @@ class Game:
                 self.display_text(f"{self.mode.winner} win !" , 350, 300)
             else:
                 self.display_text(f"It's a tie !", 350, 300)
-        pygame.display.flip()
-        pygame.time.wait(2000)
+        pg.display.flip()
+        pg.time.wait(2000)
 
     def run(self):
         player_name, selected_mode = self.enter_name(), self.game_mode()
@@ -158,4 +158,4 @@ class Game:
 if __name__ == "__main__":
     game = Game()
     game.run()
-    pygame.quit()
+    pg.quit()

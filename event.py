@@ -1,4 +1,4 @@
-import pygame
+import pygame as pg
 from random_vocabulary import Vocabulary
 from bot_train import update_word_time_csv
 import time
@@ -8,12 +8,11 @@ class Mode:
     def __init__(self, player, font, background):
         self.player = player
         self.font = font
-        self.def_font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 24)
+        self.def_font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 24)
         self.background = background
 
         self.vocabulary = Vocabulary('dictionary/filtered_dictionary.csv')
         self.current_word = self.vocabulary.random_word()
-        self.word_length = len(self.current_word['word'])
 
         self.input_border_color = (255, 255, 255)
         self.user_input = ''
@@ -34,25 +33,24 @@ class Mode:
         self.running = False
 
     def event(self, event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
+        if event.type == pg.KEYDOWN:
+            if event.key == pg.K_RETURN:
                 self.check_answer()
-            elif event.key == pygame.K_BACKSPACE:
+            elif event.key == pg.K_BACKSPACE:
                 self.user_input = self.user_input[:-1]
             else:
                 self.user_input += event.unicode.lower()
 
     def check_answer(self):
-        user_answer = self.current_word['word'][0] + self.user_input.strip().lower()
+        user_answer = self.current_word['word'][0] + self.user_input.strip().lower()[:len(self.current_word['word'])-1]
         self.reveal_word = self.current_word['word'].upper()
-        print(f"Checking answer: {user_answer} == {self.current_word['word']}")
+        print(f"answer: {user_answer} == {self.current_word['word']}")
         if self.current_word['word'] == user_answer:
             self.input_border_color = (0, 155, 0)
             self.player.score += 1
             self.flash_timer = self.flash_duration
             time_taken = time.time() - self.answer_start_time
-            word_length = len(self.current_word['word'])
-            update_word_time_csv(word_length, time_taken)
+            update_word_time_csv(len(self.current_word['word']), time_taken)
             self.player.move()
             self.waiting_for_flash = True
             return True
@@ -79,7 +77,7 @@ class Mode:
         part_of_speech = self.current_word.get('part_of_speech', '')
         definition_text = f"Define ({part_of_speech}): {self.current_word['definition']}"
 
-        small_font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 24)
+        small_font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 24)
         words = definition_text.split(' ')
         lines = []
         current_line = ''
@@ -97,10 +95,10 @@ class Mode:
 
         # definition box
         text_box_height = len(lines) * small_font.get_linesize() + 20
-        transparency = pygame.Surface((screen.get_width() // 2 - 60, text_box_height), pygame.SRCALPHA)
+        transparency = pg.Surface((screen.get_width() // 2 - 60, text_box_height), pg.SRCALPHA)
 
-        pygame.draw.rect(transparency, (50, 50, 50, 128),
-                         pygame.Rect(0, 0, screen.get_width() // 2 - 60, text_box_height))
+        pg.draw.rect(transparency, (50, 50, 50, 128),
+                         pg.Rect(0, 0, screen.get_width() // 2 - 60, text_box_height))
         screen.blit(transparency, (40, 80))
         y_offset = 90
         for line in lines:
@@ -119,14 +117,14 @@ class Mode:
                 display_text += '_ '
 
         # input box
-        input_box = pygame.Rect((80, 550, 500, 70))
-        pygame.draw.rect(screen, (255, 255, 255), input_box)
-        pygame.draw.rect(screen, self.input_border_color, input_box, 3)
+        input_box = pg.Rect((80, 550, 500, 70))
+        pg.draw.rect(screen, (255, 255, 255), input_box)
+        pg.draw.rect(screen, self.input_border_color, input_box, 3)
         input_text_surface = self.font.render(display_text.strip(), True, (0, 0, 0))
         screen.blit(input_text_surface, (input_box.x + 10, input_box.y - 5))
 
         # answer
-        font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 32)
+        font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 32)
         answer = font.render(self.reveal_word, True, (0, 0, 0))
         screen.blit(answer, (input_box.x + 20, 500))
 
@@ -137,9 +135,9 @@ class Mode1(Mode):
         self.mistakes = 0
         self.max_mistakes = 3
         self.move_distance = int(self.background.screen_height * 0.25)
-        self.heart_image = pygame.image.load('game_assets/hearts/heart.png').convert_alpha()
-        self.blackheart_image = pygame.image.load('game_assets/hearts/border.png').convert_alpha()
-        self.def_font = pygame.font.Font('game_assets/Grand9K Pixel.ttf', 24)
+        self.heart_image = pg.image.load('game_assets/hearts/heart.png').convert_alpha()
+        self.blackheart_image = pg.image.load('game_assets/hearts/border.png').convert_alpha()
+        self.def_font = pg.font.Font('game_assets/Grand9K Pixel.ttf', 24)
 
     def check_answer(self):
         if super().check_answer():
@@ -155,7 +153,7 @@ class Mode1(Mode):
         self.background.draw(screen, 'mode1')
         self.player.draw(screen, 890)
         super().draw(screen)
-        font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 26)
+        font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 26)
         self.player.update_score(screen, font, 1050, 10)
         pos_heart_x, pos_heart_y = screen.get_width() * 0.8, 50
 
@@ -181,7 +179,7 @@ class Mode2(Mode):
 
         self.bot = bot
 
-        self.total_time = 5
+        self.total_time = 180
         self.elapsed_time = 0
 
         self.bot_x = self.screen_width // 2 + 394
@@ -192,7 +190,7 @@ class Mode2(Mode):
 
         self.bot.start_new_word(len(self.current_word['word']))
 
-        self.finish_line_image = pygame.image.load("game_assets/Environment/finish.png").convert_alpha()
+        self.finish_line_image = pg.image.load("game_assets/Environment/finish.png").convert_alpha()
         self.finish_y = 450
         self.player_finish_visible = False
         self.bot_finish_visible = False
@@ -207,7 +205,7 @@ class Mode2(Mode):
                 self.car_y = self.screen_height
             if self.player.score >= 18:
                 self.player_finish_visible = True
-            self.bot.start_new_word(len(self.current_word['word']))
+        self.bot.start_new_word(len(self.current_word['word']))
 
     def update(self, delta_time):
         super().update(delta_time)
@@ -224,14 +222,14 @@ class Mode2(Mode):
             self.user_input = ''
             self.bot.start_new_word(len(self.current_word['word']))
 
-        if self.player.score == 15:
+        if self.player.score == 10:
             self.winner = 'player'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:
                 self.stop()
                 return
 
-        elif self.bot.score == 15:
+        elif self.bot.score == 10:
             self.winner = 'bot'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:
@@ -253,7 +251,7 @@ class Mode2(Mode):
         self.player.draw(screen, self.player_x)
 
         super().draw(screen)
-        font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 26)
+        font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 26)
         self.player.update_score(screen, font, self.player_x - 200)
         self.bot.update_score(screen, font, self.bot_x - 150)
 

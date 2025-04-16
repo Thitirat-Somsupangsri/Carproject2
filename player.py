@@ -66,8 +66,8 @@ class Bot(Player):
         return random.uniform(lower_bound, upper_bound)
 
     def start_new_word(self, word_length):
-        self.target_time = self.estimate_time(word_length)
         self.current_time = 0
+        self.target_time = self.estimate_time(word_length)
         self.active = True
 
     def update(self, delta_time):
@@ -81,3 +81,5 @@ class Bot(Player):
                 self.active = False
                 return True
         super().update(delta_time)
+
+

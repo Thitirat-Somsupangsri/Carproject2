@@ -1,4 +1,4 @@
-import pygame
+import pygame as pg
 import random
 
 class Config:
@@ -16,16 +16,17 @@ class Config:
         self.__road_grid_height = self.__screen_height // self.__road_tile_size
 
         self.__background_images_intro = [
-            pygame.image.load("game_assets/Environment/green.png").convert(),
-            pygame.image.load("game_assets/Environment/flower.png").convert(),
-            pygame.image.load("game_assets/Environment/grass.png").convert(),
-            pygame.image.load("game_assets/Environment/hill.png").convert()
+            pg.image.load("game_assets/Environment/green.png").convert(),
+            pg.image.load("game_assets/Environment/flower.png").convert(),
+            pg.image.load("game_assets/Environment/grass.png").convert(),
+            pg.image.load("game_assets/Environment/hill.png").convert()
         ]
 
-        self.__road_tile = pygame.image.load('game_assets/Environment/Summer_road (64 x 64).png').convert()
+        self.__road_tile = pg.image.load('game_assets/Environment/Summer_road (64 x 64).png').convert()
 
         self.__background_probabilities = [0.91, 0.01, 0.07, 0.01]
         self.__background_grid = self.create_background_grid()
+
 
     @property
     def screen_height(self):
@@ -49,11 +50,14 @@ class Config:
     def draw(self, screen, event):
         max_y = min(self.__bg_grid_height, len(self.__background_grid))
         max_x = min(self.__bg_grid_width, len(self.__background_grid[0]))
+        road_marking = pg.image.load('game_assets/Environment/Road_markings.png').convert()
         for y in range(max_y):
             for x in range(max_x):
                 tile = self.__background_grid[y][x]
                 screen.blit(tile, (x * self.__background_tile_size, y * self.__background_tile_size))
-        if event == 'mode1':
+        if event == 'intro':
+            screen.blit(road_marking, (1200,20))
+        elif event == 'mode1':
             road_x_start = 836
 
             for y in range(self.__road_grid_height):
