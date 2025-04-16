@@ -61,7 +61,7 @@ class Bot(Player):
 
     def estimate_time(self, word_length):
         average_time = self.word_time_data.get(word_length, 30)
-        lower_bound = max(1, average_time - 10)
+        lower_bound = max(5, average_time - 10)
         upper_bound = average_time + 15
         return random.uniform(lower_bound, upper_bound)
 
@@ -74,10 +74,10 @@ class Bot(Player):
         if self.active and self.target_time is not None:
             self.current_time += delta_time
             if self.current_time >= self.target_time:
-                self.move()
                 self.score += 1
+                self.move()
                 if self.position < 0:
-                    self.position = 900
+                    self.position = 750
                 self.active = False
                 return True
         super().update(delta_time)

@@ -18,6 +18,7 @@ class Game:
         self.car_images = [pygame.image.load(f"game_assets/Cars/Car{i}.png").convert_alpha() for i in range(1, 10)]
         self.player = Player(name="Player 1", car_image=self.car_images)
         self.mode = None
+        self.mode_num = None
         self.running = True
         self.game_started = False
         self.game_over = False
@@ -93,8 +94,10 @@ class Game:
                     return None
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_1:
+                        self.mode_num = 1
                         return 1
                     elif event.key == pygame.K_2:
+                        self.mode_num = 2
                         return 2
 
             self.clock.tick(60)
@@ -126,10 +129,14 @@ class Game:
 
     def game_over_screen(self):
         self.screen.fill((0, 0, 0))
-        self.display_text("Game Over", 350, 250)
-        self.display_text(f"Score: {self.player.score}", 350, 300)
-        if self.mode == 2:
-            self.display_text("", 350, 300)
+        if self.mode_num == 1:
+            self.display_text("Game Over", 350, 250)
+            self.display_text(f"Score: {self.player.score}", 350, 300)
+        elif self.mode_num == 2:
+            if self.mode.winner is not None:
+                self.display_text(f"{self.mode.winner} win !" , 350, 300)
+            else:
+                self.display_text(f"It's a tie !", 350, 300)
         pygame.display.flip()
         pygame.time.wait(2000)
 
@@ -140,7 +147,6 @@ class Game:
 
             if selected_mode == 1:
                 self.mode = Mode1(self.player, self.font, self.bg)
-                print(self.mode)
             elif selected_mode == 2:
                 bot = Bot(name="Bot", car_image=self.car_images)
                 self.mode = Mode2(self.player, bot, self.font, self.bg)

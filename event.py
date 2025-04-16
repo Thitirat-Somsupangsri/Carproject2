@@ -100,7 +100,7 @@ class Mode:
         transparency = pygame.Surface((screen.get_width() // 2 - 60, text_box_height), pygame.SRCALPHA)
 
         pygame.draw.rect(transparency, (50, 50, 50, 128),
-                         pygame.Rect(0,0, screen.get_width() // 2 - 60, text_box_height))
+                         pygame.Rect(0, 0, screen.get_width() // 2 - 60, text_box_height))
         screen.blit(transparency, (40, 80))
         y_offset = 90
         for line in lines:
@@ -119,15 +119,16 @@ class Mode:
                 display_text += '_ '
 
         # input box
-        input_box = pygame.Rect((80, 500, 500, 70))
+        input_box = pygame.Rect((80, 550, 500, 70))
         pygame.draw.rect(screen, (255, 255, 255), input_box)
         pygame.draw.rect(screen, self.input_border_color, input_box, 3)
-        input_text_surface = self.font.render(display_text.strip(), True, (0,0,0))
+        input_text_surface = self.font.render(display_text.strip(), True, (0, 0, 0))
         screen.blit(input_text_surface, (input_box.x + 10, input_box.y - 5))
 
+        # answer
         font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 32)
-        answer = font.render(self.reveal_word, True, (0,0,0))
-        screen.blit(answer, (input_box.x + 20, 430))
+        answer = font.render(self.reveal_word, True, (0, 0, 0))
+        screen.blit(answer, (input_box.x + 20, 500))
 
 
 class Mode1(Mode):
@@ -155,14 +156,14 @@ class Mode1(Mode):
         self.player.draw(screen, 890)
         super().draw(screen)
         font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 26)
-        self.player.update_score(screen, font, 1050 ,70)
-        pos_heart_x, pos_heart_y = screen.get_width() * 0.8, 20
+        self.player.update_score(screen, font, 1050, 10)
+        pos_heart_x, pos_heart_y = screen.get_width() * 0.8, 50
 
         for i in range(self.mistakes):
-            screen.blit(self.blackheart_image, (pos_heart_x + ((3-i-1) * 65),pos_heart_y))
+            screen.blit(self.blackheart_image, (pos_heart_x + ((3 - i - 1) * 65), pos_heart_y))
 
-        for i in range(3-self.mistakes):
-            screen.blit(self.heart_image, (pos_heart_x + (i * 65),pos_heart_y))
+        for i in range(3 - self.mistakes):
+            screen.blit(self.heart_image, (pos_heart_x + (i * 65), pos_heart_y))
 
         '''
         mistakes_text = self.font.render(f"Hearts: ", True, (199, 21, 133))
@@ -180,32 +181,39 @@ class Mode2(Mode):
 
         self.bot = bot
 
-        self.total_time = 180
+        self.total_time = 5
         self.elapsed_time = 0
 
-        self.move_distance = 50
-
-        self.bot_x = self.screen_width // 2 + 400
-        self.player_x = self.screen_width // 2 + 70
+        self.bot_x = self.screen_width // 2 + 394
+        self.player_x = self.screen_width // 2 + 66
 
         self.player.position = self.screen_height // 2
         self.bot.position = self.screen_height // 2
 
         self.bot.start_new_word(len(self.current_word['word']))
 
+        self.finish_line_image = pygame.image.load("game_assets/Environment/finish.png").convert_alpha()
+        self.finish_y = 450
+        self.player_finish_visible = False
+        self.bot_finish_visible = False
+
+        self.winner = None
+        self.winner_timer = 0
+        self.winner_delay = 1.0
+
     def check_answer(self):
         if super().check_answer():
             if self.car_y < 0:
                 self.car_y = self.screen_height
-            if self.player.score == 20:
-                print("Player wins by reaching finish line!")
-                self.stop()
-                return
-
+            if self.player.score >= 18:
+                self.player_finish_visible = True
             self.bot.start_new_word(len(self.current_word['word']))
 
     def update(self, delta_time):
         super().update(delta_time)
+        if self.bot.score >= 9:
+            self.bot_finish_visible = True
+
         self.elapsed_time += delta_time
 
         bot_moved = self.bot.update(delta_time)
@@ -213,28 +221,60 @@ class Mode2(Mode):
 
         if bot_moved:
             self.current_word = self.vocabulary.random_word()
+            self.user_input = ''
             self.bot.start_new_word(len(self.current_word['word']))
 
-        if (self.bot.score == 20 or self.player.score == 20
-                or self.elapsed_time >= self.total_time):
+        if self.player.score == 15:
+            self.winner = 'player'
+            self.winner_timer += delta_time
+            if self.winner_timer >= self.winner_delay:
+                self.stop()
+                return
+
+        elif self.bot.score == 15:
+            self.winner = 'bot'
+            self.winner_timer += delta_time
+            if self.winner_timer >= self.winner_delay:
+                self.stop()
+                return
+
+        if self.elapsed_time >= self.total_time:
+            if self.player.score > self.bot.score:
+                self.winner = 'player'
+            elif self.player.score < self.bot.score:
+                self.winner = 'bot'
             self.stop()
             return
 
     def draw(self, screen):
         self.background.draw(screen, 'mode2')
 
-        self.bot.draw(screen,self.bot_x)
-        self.player.draw(screen,self.player_x)
+        self.bot.draw(screen, self.bot_x)
+        self.player.draw(screen, self.player_x)
 
         super().draw(screen)
         font = pygame.font.Font("game_assets/Grand9K Pixel.ttf", 26)
-        self.player.update_score(screen,font, self.player_x-200)
+        self.player.update_score(screen, font, self.player_x - 200)
         self.bot.update_score(screen, font, self.bot_x - 150)
 
         remaining_time = max(0, int(self.total_time - self.elapsed_time))
         minutes = remaining_time // 60
         seconds = remaining_time % 60
         timer_text = font.render(f"Time Left: {minutes:02}:{seconds:02}",
-                                      True, (255, 255, 255))
+                                 True, (255, 255, 255))
         screen.blit(timer_text, (100, 10))
 
+        center = self.screen_width // 2
+        bot_lane_start = center + 372
+        player_lane_start = center + 42
+
+        if self.player_finish_visible:
+            screen.blit(
+                self.finish_line_image,
+                (player_lane_start, self.finish_y)
+            )
+        if self.bot_finish_visible:
+            screen.blit(
+                self.finish_line_image,
+                (bot_lane_start, self.finish_y)
+            )
