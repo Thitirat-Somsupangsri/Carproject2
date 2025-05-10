@@ -13,7 +13,10 @@ class Player:
         self.target_position = None
         self.moving = False
         self.speed = 200
+        manager = PlayerDataManager()
         self.hint_left = 0
+        if self.name in manager.data:
+            self.hint_left = int(PlayerDataManager().get_data(self.name, 'hints'))
 
     def move(self):
         if not self.moving:
@@ -57,8 +60,8 @@ class Bot(Player):
         with open(self.data_file, mode='r', newline='') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                length = int(row['word length'])
-                average_time = float(row['average time'])
+                length = int(row['word_length'])
+                average_time = float(row['average_time'])
                 data[length] = average_time
         return data
 
@@ -104,40 +107,42 @@ class PlayerDataManager:
     def add_player(self, username):
         if username not in self.data:
             self.data[username] = {
-                "played count in mode1": 0,
-                "best score in mode1": 0,
-                "average time played in mode1": 0,
-                "played count in mode2": 0,
-                "total wins in mode2": 0,
-                "hints": 0,
-                "highest streak": 0
+                'played count in mode1': 0,
+                'best score in mode1': 0,
+                'average time played in mode1': 0,
+                'played count in mode2': 0,
+                'total wins in mode2': 0,
+                'hints': 0,
+                'highest streak': 0
             }
 
-    def get_data(self, username):
-        return self.data[username]
+    def get_data(self, username, data):
+        return self.data[username][data]
 
-    def update_mode1(self, username, score, streak, duration):
+    def update_mode1(self, username, score, streak, duration, hint):
         self.add_player(username)
         player = self.data[username]
 
-        player["played count in mode1"] += 1
+        player['played count in mode1'] += 1
+        player['hints'] = hint
 
-        if score > player["best score in mode1"]:
-            player["best score in mode1"] = score
+        if score > player['best score in mode1']:
+            player['best score in mode1'] = score
 
-        prev_total = player["average time played in mode1"] * (player["played count in mode1"] - 1)
-        player["average time played in mode1"] = round((prev_total + duration) / player["played count in mode1"], 2)
+        prev_total = player['average time played in mode1'] * (player['played count in mode1'] - 1)
+        player['average time played in mode1'] = round((prev_total + duration) / player['played count in mode1'], 2)
 
-        if streak > player["highest streak"]:
-            player["highest streak"] = streak
+        if streak > player['highest streak']:
+            player['highest streak'] = streak
 
         self.__save()
 
-    def update_mode2(self, username, won=False):
+    def update_mode2(self, username, hint, won=False,):
         self.add_player(username)
         player = self.data[username]
-        player["played count in mode2"] += 1
+        player['hints'] = hint
+        player['played count in mode2'] += 1
         if won:
-            player["total wins in mode2"] += 1
+            player['total wins in mode2'] += 1
 
         self.__save()

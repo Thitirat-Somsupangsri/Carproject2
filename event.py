@@ -30,20 +30,21 @@ class Mode:
                                                  self.background.screen_height)
         self.car_y = self.screen_height // 2
 
-        self.reveal_word = ''
+        self.reveal_word_answer = ''
+
+        self.hint_letter = 0
 
         self.answer_start_time = time.time()
         self.round_time = time.time()
 
         self.score_ratio = 1
-
         self.char_images = [
             pg.image.load("game_assets/character/Cop.png").convert_alpha(),
             pg.image.load("game_assets/character/Cop2.png").convert_alpha(),
             pg.image.load("game_assets/character/Cop3.png").convert_alpha()
         ]
         self.walk_prob = None
-
+        self.hint_left = self.player.hint_left
         self.manager = PlayerDataManager()
 
     def stop(self):
@@ -55,16 +56,30 @@ class Mode:
                 self.check_answer()
             elif event.key == pg.K_BACKSPACE:
                 self.user_input = self.user_input[:-1]
+            elif event.key == pg.K_UP and self.hint_left > 0:
+                self.use_hint()
             else:
                 self.user_input += event.unicode.lower()
         if event.type == pg.MOUSEBUTTONDOWN:
             if self.walk_prob and self.walk_prob.check_click(event.pos):
                 print("clicked")
-                self.player.hint_left += 1
+                self.hint_left += 1
+
+    def use_hint(self):
+        if self.hint_letter < len(self.current_word['word']):
+            self.user_input = ''
+            self.hint_letter += 1
+            self.hint_left -= 1
+
 
     def check_answer(self):
-        user_answer = self.current_word['word'][0] + self.user_input.strip().lower()[:len(self.current_word['word'])-1]
-        self.reveal_word = self.current_word['word'].upper()
+        user_answer = self.current_word['word'][0]
+        for i in range(1,self.hint_letter+1):
+            user_answer += self.current_word['word'][i]
+
+        user_answer += self.user_input.strip().lower()[:len(self.current_word['word']) -1 - self.hint_letter]
+        self.hint_letter = 0
+        self.reveal_word_answer = self.current_word['word'].upper()
         if random.randint(1, 3) == 1:
             x = random.randint(100, 1200)
             y = random.randint(100, 700)
@@ -86,6 +101,7 @@ class Mode:
             return True
         else:
             self.input_border_color = (155, 0, 0)
+
             self.flash_timer = self.flash_duration
             self.waiting_for_flash = True
             return False
@@ -93,12 +109,11 @@ class Mode:
     def update(self, delta_time):
         if self.walk_prob:
             self.walk_prob.update()
-
         if self.flash_timer > 0:
             self.flash_timer -= delta_time
             if self.flash_timer <= 0:
                 self.input_border_color = (255, 255, 255)
-                self.reveal_word = ''
+                self.reveal_word_answer = ''
 
         if self.waiting_for_flash and self.flash_timer <= 0:
             self.user_input = ''
@@ -145,10 +160,14 @@ class Mode:
         word = self.current_word['word']
         word_length = len(word)
         display_text = word[0].upper() + ' '
+        if self.hint_letter > 0:
+            for i in range(1, self.hint_letter + 1):
+                display_text += self.current_word['word'][i].upper() + ' '
+                word_length -= 1
 
-        for i in range(1, word_length):
-            if i <= len(self.user_input):
-                display_text += self.user_input[i - 1].upper() + ' '
+        for i in range(word_length-1):
+            if i < len(self.user_input):
+                display_text += self.user_input[i].upper() + ' '
             else:
                 display_text += '_ '
 
@@ -160,9 +179,12 @@ class Mode:
         screen.blit(input_text_surface, (input_box.x + 10, input_box.y - 5))
 
         # answer
-        font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 32)
-        answer = font.render(self.reveal_word, True, (0, 0, 0))
+        font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 30)
+        answer = font.render(self.reveal_word_answer, True, (0, 0, 0))
         screen.blit(answer, (input_box.x + 20, 500))
+
+        hint = font.render(f'Hint: {self.hint_left}', True, (250,250,250))
+        screen.blit(hint, (1180, 10))
 
 
 class Mode1(Mode):
@@ -192,7 +214,7 @@ class Mode1(Mode):
         if self.mistakes >= self.max_mistakes:
             time_taken = time.time() - self.answer_start_time
             self.time_played(time_taken)
-            self.manager.update_mode1(self.player.name, self.player.score, self.streak, time_taken)
+            self.manager.update_mode1(self.player.name, self.player.score, self.streak, time_taken, self.hint_left)
             self.stop()
 
     def time_played(self, duration):
@@ -215,7 +237,7 @@ class Mode1(Mode):
             screen.blit(self.heart_image, (pos_heart_x + (i * 65), pos_heart_y))
 
         streak = font.render(f'Streak: {self.streak}', True, (255, 255, 255))
-        screen.blit(streak, (1050, 10))
+        screen.blit(streak, (1000, 10))
 
     def update(self, delta_time):
         super().update(delta_time)
@@ -275,7 +297,7 @@ class Mode2(Mode):
             self.winner = 'player'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:
-                self.manager.update_mode2(self.player.name, True)
+                self.manager.update_mode2(self.player.name,self.player.hint_left,True)
                 self.stop()
                 return
 
@@ -283,17 +305,17 @@ class Mode2(Mode):
             self.winner = 'bot'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:
-                self.manager.update_mode2(self.player.name, )
+                self.manager.update_mode2(self.player.name, self.hint_left)
                 self.stop()
                 return
 
         if self.elapsed_time >= self.total_time:
             if self.player.score > self.bot.score:
                 self.winner = 'player'
-                self.manager.update_mode2(self.player.name, True)
+                self.manager.update_mode2(self.player.name, self.hint_left,True)
             elif self.player.score < self.bot.score:
                 self.winner = 'bot'
-                self.manager.update_mode2(self.player.name)
+                self.manager.update_mode2(self.player.name,self.hint_left)
             self.stop()
             return
 

@@ -130,27 +130,29 @@ class Game:
     def game_over_screen(self):
         self.screen.fill((52, 73, 94))
         if self.mode_num == 1:
-            self.display_text("Game Over", 350, 250)
-            self.display_text(f"Score: {self.player.score}", 350, 300)
+            self.display_text('Game Over', 350, 250)
+            self.display_text(f'Score: {self.player.score}', 350, 300)
         elif self.mode_num == 2:
             if self.mode.winner is not None:
-                self.display_text(f"{self.mode.winner} win !" , 350, 300)
+                self.display_text(f'{self.mode.winner} win !' , 350, 300)
             else:
                 self.display_text(f"It's a tie !", 350, 300)
-        self.display_text("Press R to Restart", 350, 400)
-        self.display_text("Press Q to Exit", 350, 460)
+        self.display_text('Press R to Restart', 350, 400)
+        self.display_text('Press Q to Exit', 350, 460)
         pg.display.flip()
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                self.running = False
-
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_r:
-                    self.run('restart')
-                    return
-                if event.key == pg.K_q:
+        waiting = True
+        while waiting is True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
                     self.running = False
-
+                    waiting = False
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_r:
+                        self.run('restart')
+                        return
+                    if event.key == pg.K_q:
+                        self.running = False
+                        waiting = False
 
     def run(self,status='new'):
         if status == 'new':
