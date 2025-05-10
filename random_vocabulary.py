@@ -1,11 +1,13 @@
 import random
 import csv
 
+
 class Vocabulary:
     def __init__(self, csv_file):
         self.words = self.load_words(csv_file)
 
-    def load_words(self, csv_file):
+    @staticmethod
+    def load_words(csv_file):
         words = {}
         with open(csv_file, 'r', encoding='utf-8') as file:
             csv_reader = csv.reader(file)

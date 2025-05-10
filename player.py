@@ -1,5 +1,7 @@
 import random
 import csv
+import json
+import os
 
 
 class Player:
@@ -11,6 +13,7 @@ class Player:
         self.target_position = None
         self.moving = False
         self.speed = 200
+        self.hint_left = 0
 
     def move(self):
         if not self.moving:
@@ -19,7 +22,7 @@ class Player:
 
     def reset_player(self):
         self.score = 0
-        self.position = 0
+        self.position = 450
 
     def draw(self, screen,x):
         screen.blit(self.car_image, (x, self.position))
@@ -54,8 +57,8 @@ class Bot(Player):
         with open(self.data_file, mode='r', newline='') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                length = int(row['word_length'])
-                average_time = float(row['average_time'])
+                length = int(row['word length'])
+                average_time = float(row['average time'])
                 data[length] = average_time
         return data
 
@@ -83,3 +86,58 @@ class Bot(Player):
         super().update(delta_time)
 
 
+class PlayerDataManager:
+    def __init__(self, filename="player_data.json"):
+        self.filename = filename
+        self.data = self.__load()
+
+    def __load(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, "r") as file:
+                return json.load(file)
+        return {}
+
+    def __save(self):
+        with open(self.filename, "w") as file:
+            json.dump(self.data, file, indent=4)
+
+    def add_player(self, username):
+        if username not in self.data:
+            self.data[username] = {
+                "played count in mode1": 0,
+                "best score in mode1": 0,
+                "average time played in mode1": 0,
+                "played count in mode2": 0,
+                "total wins in mode2": 0,
+                "hints": 0,
+                "highest streak": 0
+            }
+
+    def get_data(self, username):
+        return self.data[username]
+
+    def update_mode1(self, username, score, streak, duration):
+        self.add_player(username)
+        player = self.data[username]
+
+        player["played count in mode1"] += 1
+
+        if score > player["best score in mode1"]:
+            player["best score in mode1"] = score
+
+        prev_total = player["average time played in mode1"] * (player["played count in mode1"] - 1)
+        player["average time played in mode1"] = round((prev_total + duration) / player["played count in mode1"], 2)
+
+        if streak > player["highest streak"]:
+            player["highest streak"] = streak
+
+        self.__save()
+
+    def update_mode2(self, username, won=False):
+        self.add_player(username)
+        player = self.data[username]
+        player["played count in mode2"] += 1
+        if won:
+            player["total wins in mode2"] += 1
+
+        self.__save()

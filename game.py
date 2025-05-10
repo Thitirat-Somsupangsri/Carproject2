@@ -1,5 +1,5 @@
 import pygame as pg
-from player import Player, Bot
+from player import Player, Bot, PlayerDataManager
 from config import Config
 from event import Mode1, Mode2
 
@@ -137,19 +137,33 @@ class Game:
                 self.display_text(f"{self.mode.winner} win !" , 350, 300)
             else:
                 self.display_text(f"It's a tie !", 350, 300)
+        self.display_text("Press R to Restart", 350, 400)
+        self.display_text("Press Q to Exit", 350, 460)
         pg.display.flip()
-        pg.time.wait(2000)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.running = False
 
-    def run(self):
-        player_name, selected_mode = self.enter_name(), self.game_mode()
-        if player_name and selected_mode:
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_r:
+                    self.run('restart')
+                    return
+                if event.key == pg.K_q:
+                    self.running = False
+
+
+    def run(self,status='new'):
+        if status == 'new':
+            player_name, selected_mode = self.enter_name(), self.game_mode()
             self.player.name = player_name
-
-            if selected_mode == 1:
-                self.mode = Mode1(self.player, self.font, self.bg)
-            elif selected_mode == 2:
-                bot = Bot(name="Bot", car_image=self.car_images)
-                self.mode = Mode2(self.player, bot, self.font, self.bg)
+        else:
+            self.player.reset_player()
+            selected_mode = self.game_mode()
+        if selected_mode == 1:
+            self.mode = Mode1(self.player, self.font, self.bg)
+        elif selected_mode == 2:
+            bot = Bot(name="Bot", car_image=self.car_images)
+            self.mode = Mode2(self.player, bot, self.font, self.bg)
 
         self.start_game()
         self.game_over_screen()

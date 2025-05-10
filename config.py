@@ -1,6 +1,7 @@
 import pygame as pg
 import random
 
+
 class Config:
     def __init__(self):
         self.__screen_width = 1300
@@ -26,7 +27,6 @@ class Config:
 
         self.__background_probabilities = [0.91, 0.01, 0.07, 0.01]
         self.__background_grid = self.create_background_grid()
-
 
     @property
     def screen_height(self):

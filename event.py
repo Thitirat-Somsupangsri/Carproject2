@@ -1,7 +1,12 @@
+import random
+
 import pygame as pg
 from random_vocabulary import Vocabulary
 from bot_train import update_word_time_csv
+from prob_character import WalkingProbs
+from player import PlayerDataManager
 import time
+import csv
 
 
 class Mode:
@@ -28,6 +33,18 @@ class Mode:
         self.reveal_word = ''
 
         self.answer_start_time = time.time()
+        self.round_time = time.time()
+
+        self.score_ratio = 1
+
+        self.char_images = [
+            pg.image.load("game_assets/character/Cop.png").convert_alpha(),
+            pg.image.load("game_assets/character/Cop2.png").convert_alpha(),
+            pg.image.load("game_assets/character/Cop3.png").convert_alpha()
+        ]
+        self.walk_prob = None
+
+        self.manager = PlayerDataManager()
 
     def stop(self):
         self.running = False
@@ -40,14 +57,27 @@ class Mode:
                 self.user_input = self.user_input[:-1]
             else:
                 self.user_input += event.unicode.lower()
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if self.walk_prob and self.walk_prob.check_click(event.pos):
+                print("clicked")
+                self.player.hint_left += 1
 
     def check_answer(self):
         user_answer = self.current_word['word'][0] + self.user_input.strip().lower()[:len(self.current_word['word'])-1]
         self.reveal_word = self.current_word['word'].upper()
+        if random.randint(1, 3) == 1:
+            x = random.randint(100, 1200)
+            y = random.randint(100, 700)
+            self.walk_prob = WalkingProbs(x, y, self.char_images, (50, 1150, 50, 750))
+        else:
+            self.walk_prob = None
+
         print(f"answer: {user_answer} == {self.current_word['word']}")
         if self.current_word['word'] == user_answer:
             self.input_border_color = (0, 155, 0)
-            self.player.score += 1
+            if self == Mode2:
+                self.score_ratio = 1
+            self.player.score += 1 * self.score_ratio
             self.flash_timer = self.flash_duration
             time_taken = time.time() - self.answer_start_time
             update_word_time_csv(len(self.current_word['word']), time_taken)
@@ -61,6 +91,9 @@ class Mode:
             return False
 
     def update(self, delta_time):
+        if self.walk_prob:
+            self.walk_prob.update()
+
         if self.flash_timer > 0:
             self.flash_timer -= delta_time
             if self.flash_timer <= 0:
@@ -74,6 +107,9 @@ class Mode:
             self.waiting_for_flash = False
 
     def draw(self, screen):
+        if self.walk_prob:
+            self.walk_prob.draw(screen)
+
         part_of_speech = self.current_word.get('part_of_speech', '')
         definition_text = f"Define ({part_of_speech}): {self.current_word['definition']}"
 
@@ -138,23 +174,38 @@ class Mode1(Mode):
         self.heart_image = pg.image.load('game_assets/hearts/heart.png').convert_alpha()
         self.blackheart_image = pg.image.load('game_assets/hearts/border.png').convert_alpha()
         self.def_font = pg.font.Font('game_assets/Grand9K Pixel.ttf', 24)
+        self.streak = 0
 
     def check_answer(self):
         if super().check_answer():
+            self.streak += 1
+            if self.streak >= 3:
+                self.score_ratio += 1
             if self.car_y < 0:
                 self.car_y = self.screen_height
+
         else:
             self.mistakes += 1
+            self.streak = 0
+            self.score_ratio = 1
 
         if self.mistakes >= self.max_mistakes:
+            time_taken = time.time() - self.answer_start_time
+            self.time_played(time_taken)
+            self.manager.update_mode1(self.player.name, self.player.score, self.streak, time_taken)
             self.stop()
+
+    def time_played(self, duration):
+        with open('mode1_stats.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([self.player.name, round(duration, 2),self.player.score])
 
     def draw(self, screen):
         self.background.draw(screen, 'mode1')
         self.player.draw(screen, 890)
         super().draw(screen)
         font = pg.font.Font("game_assets/Grand9K Pixel.ttf", 26)
-        self.player.update_score(screen, font, 1050, 10)
+        self.player.update_score(screen, font, 100, 10)
         pos_heart_x, pos_heart_y = screen.get_width() * 0.8, 50
 
         for i in range(self.mistakes):
@@ -163,10 +214,8 @@ class Mode1(Mode):
         for i in range(3 - self.mistakes):
             screen.blit(self.heart_image, (pos_heart_x + (i * 65), pos_heart_y))
 
-        '''
-        mistakes_text = self.font.render(f"Hearts: ", True, (199, 21, 133))
-        screen.blit(mistakes_text, (pos_heart_x - 180, pos_heart_y))
-        '''
+        streak = font.render(f'Streak: {self.streak}', True, (255, 255, 255))
+        screen.blit(streak, (1050, 10))
 
     def update(self, delta_time):
         super().update(delta_time)
@@ -226,6 +275,7 @@ class Mode2(Mode):
             self.winner = 'player'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:
+                self.manager.update_mode2(self.player.name, True)
                 self.stop()
                 return
 
@@ -233,14 +283,17 @@ class Mode2(Mode):
             self.winner = 'bot'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:
+                self.manager.update_mode2(self.player.name, )
                 self.stop()
                 return
 
         if self.elapsed_time >= self.total_time:
             if self.player.score > self.bot.score:
                 self.winner = 'player'
+                self.manager.update_mode2(self.player.name, True)
             elif self.player.score < self.bot.score:
                 self.winner = 'bot'
+                self.manager.update_mode2(self.player.name)
             self.stop()
             return
 
