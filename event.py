@@ -201,6 +201,7 @@ class Mode1(Mode):
         self.blackheart_image = pg.image.load('game_assets/hearts/border.png').convert_alpha()
         self.def_font = pg.font.Font('game_assets/Grand9K Pixel.ttf', 24)
         self.streak = 0
+        self.highest_streak = 0
 
     def check_answer(self):
         if super().check_answer():
@@ -213,13 +214,15 @@ class Mode1(Mode):
         else:
             SoundEffects.get_instance().play("beep")
             self.mistakes += 1
+            if self.streak > self.highest_streak:
+                self.highest_streak = self.streak
             self.streak = 0
             self.score_ratio = 1
 
         if self.mistakes >= self.max_mistakes:
-            time_taken = time.time() - self.answer_start_time
+            time_taken = time.time() - self.round_time
             self.time_played(time_taken)
-            self.manager.update_mode1(self.player.name, self.player.score, self.streak, time_taken, self.hint_left)
+            self.manager.update_mode1(self.player.name, self.player.score, self.highest_streak, time_taken, self.hint_left)
             self.stop()
 
     def time_played(self, duration):
@@ -255,7 +258,7 @@ class Mode2(Mode):
 
         self.bot = bot
 
-        self.total_time = 180
+        self.total_time = 30
         self.elapsed_time = 0
 
         self.bot_x = self.screen_width // 2 + 394
@@ -279,7 +282,7 @@ class Mode2(Mode):
         if super().check_answer():
             if self.car_y < 0:
                 self.car_y = self.screen_height
-            if self.player.score >= 18:
+            if self.player.score >= 9:
                 self.player_finish_visible = True
         self.bot.start_new_word(len(self.current_word['word']))
 
@@ -299,7 +302,7 @@ class Mode2(Mode):
             self.user_input = ''
             self.bot.start_new_word(len(self.current_word['word']))
 
-        if self.player.score == 10:
+        if self.player.score == 2:
             self.winner = 'player'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:

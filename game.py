@@ -3,6 +3,9 @@ from player import Player, Bot, PlayerDataManager
 from config import Config
 from event import Mode1, Mode2
 from sfx import SoundEffects
+from tkinter import *
+from tkinter import ttk
+import time
 
 class Game:
     def __init__(self):
@@ -181,7 +184,70 @@ class Game:
         self.game_over_screen()
 
 
+class GameLauncher:
+    def __init__(self, game):
+        self.game = game
+        self.game.grid_columnconfigure(0, weight=1)
+
+        self.start_button = Button(self.game, text="Start Game", command=self.start_game,font=("Arial", 20))
+        self.start_button.grid(row=1,sticky= 'nsew')
+
+        self.leaderboard_button = Button(self.game, text="Leaderboard", command=self.show_leaderboard,font=("Arial", 20))
+        self.leaderboard_button.grid(row=2,sticky= 'nsew')
+
+    def start_game(self):
+        self.game.destroy()
+        game = Game()
+        game.run()
+        pg.quit()
+
+    def show_leaderboard(self):
+        leaderboard_window = Toplevel(self.game)
+        leaderboard_window.title("Leaderboard")
+        leaderboard_window.geometry("1000x400")
+        manager = PlayerDataManager()
+        tree = ttk.Treeview(leaderboard_window, columns=("Player", "Played Count Mode1", "Best Score Mode1",
+                                                         "Avg Time Mode1", "Played Count Mode2",
+                                                         "Total Wins Mode2", "Hints", "Highest Streak"),
+                            show="headings")
+
+        tree.heading("Player", text="Player")
+        tree.heading("Played Count Mode1", text="Played Count Mode1")
+        tree.heading("Best Score Mode1", text="Best Score Mode1")
+        tree.heading("Avg Time Mode1", text="Avg Time Mode1")
+        tree.heading("Played Count Mode2", text="Played Count Mode2")
+        tree.heading("Total Wins Mode2", text="Total Wins Mode2")
+        tree.heading("Hints", text="Hints")
+        tree.heading("Highest Streak", text="Highest Streak")
+
+        tree.column("Player", width=100, anchor="w")
+        tree.column("Played Count Mode1", width=80, anchor="center")
+        tree.column("Best Score Mode1", width=80, anchor="center")
+        tree.column("Avg Time Mode1", width=80, anchor="center")
+        tree.column("Played Count Mode2", width=80, anchor="center")
+        tree.column("Total Wins Mode2", width=80, anchor="center")
+        tree.column("Hints", width=80, anchor="center")
+        tree.column("Highest Streak", width=80, anchor="center")
+
+        sorted_players = manager.get_sorted_players()
+
+        for username, stats in sorted_players[:5]:
+            tree.insert("", "end", values=(username,
+                                           stats['played count in mode1'],
+                                           stats['best score in mode1'],
+                                           stats['average time played in mode1'],
+                                           stats['played count in mode2'],
+                                           stats['total wins in mode2'],
+                                           stats['hints'],
+                                           stats['highest streak']))
+
+        tree.pack(fill=BOTH, expand=True)
+
+
 if __name__ == "__main__":
-    game = Game()
-    game.run()
-    pg.quit()
+    root = Tk()
+    root.title("Game Launcher")
+    root.geometry(f"300x400")
+    root.resizable(False, False)
+    game = GameLauncher(root)
+    root.mainloop()

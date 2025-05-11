@@ -143,3 +143,7 @@ class PlayerDataManager:
             player['total wins in mode2'] += 1
 
         self.__save()
+
+    def get_sorted_players(self):
+        sorted_players = sorted(self.data.items(), key=lambda x: x[1]['best score in mode1'], reverse=True)
+        return sorted_players

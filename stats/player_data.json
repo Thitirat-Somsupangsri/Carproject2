@@ -1,110 +1,110 @@
 {
-    ";": {
-        "played count in mode1": 3,
-        "best score in mode1": 2,
-        "average time played in mode1": 6.48,
-        "played count in mode2": 2,
-        "total wins in mode2": 2,
+    "thiti": {
+        "played count in mode1": 2,
+        "best score in mode1": 0,
+        "average time played in mode1": 31.81,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
         "hints": 0,
         "highest streak": 0
     },
-    ",": {
-        "played count in mode1": 1,
-        "best score in mode1": 3,
-        "average time played in mode1": 5.59,
+    "palyer2": {
+        "played count in mode1": 2,
+        "best score in mode1": 5,
+        "average time played in mode1": 52.06,
+        "played count in mode2": 1,
+        "total wins in mode2": 0,
+        "hints": 1,
+        "highest streak": 0
+    },
+    "omgy": {
+        "played count in mode1": 3,
+        "best score in mode1": 4,
+        "average time played in mode1": 51.27,
         "played count in mode2": 0,
         "total wins in mode2": 0,
         "hints": 1,
         "highest streak": 0
     },
-    "1": {
+    "helo": {
         "played count in mode1": 2,
-        "best score in mode1": 2,
-        "average time played in mode1": 3.76,
+        "best score in mode1": 1,
+        "average time played in mode1": 22.08,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 0,
+        "highest streak": 1
+    },
+    "heelo": {
+        "played count in mode1": 2,
+        "best score in mode1": 0,
+        "average time played in mode1": 10.24,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 0,
+        "highest streak": 0
+    },
+    "majar": {
+        "played count in mode1": 2,
+        "best score in mode1": 1,
+        "average time played in mode1": 26.57,
         "played count in mode2": 0,
         "total wins in mode2": 0,
         "hints": 2,
-        "highest streak": 0
+        "highest streak": 1
     },
-    "r": {
+    "testrabob": {
         "played count in mode1": 1,
-        "best score in mode1": 0,
-        "average time played in mode1": 8.37,
-        "played count in mode2": 0,
-        "total wins in mode2": 0,
-        "hints": 0,
-        "highest streak": 0
-    },
-    "k": {
-        "played count in mode1": 3,
-        "best score in mode1": 0,
-        "average time played in mode1": 6.47,
-        "played count in mode2": 0,
-        "total wins in mode2": 0,
-        "hints": 0,
-        "highest streak": 0
-    },
-    "l": {
-        "played count in mode1": 2,
-        "best score in mode1": 1,
-        "average time played in mode1": 13.96,
-        "played count in mode2": 0,
-        "total wins in mode2": 0,
-        "hints": 0,
-        "highest streak": 0
-    },
-    "tal": {
-        "played count in mode1": 1,
-        "best score in mode1": 1,
-        "average time played in mode1": 12.3,
-        "played count in mode2": 0,
-        "total wins in mode2": 0,
-        "hints": 0,
-        "highest streak": 0
-    },
-    "j": {
-        "played count in mode1": 9,
         "best score in mode1": 2,
-        "average time played in mode1": 8.54,
+        "average time played in mode1": 55.12,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 2,
+        "highest streak": 2
+    },
+    "mong": {
+        "played count in mode1": 0,
+        "best score in mode1": 0,
+        "average time played in mode1": 0,
         "played count in mode2": 1,
         "total wins in mode2": 0,
-        "hints": 2,
+        "hints": 1,
         "highest streak": 0
     },
-    "joblaew": {
-        "played count in mode1": 1,
-        "best score in mode1": 0,
-        "average time played in mode1": 6.01,
-        "played count in mode2": 0,
-        "total wins in mode2": 0,
-        "hints": 0,
-        "highest streak": 0
-    },
-    "onmg": {
-        "played count in mode1": 1,
-        "best score in mode1": 0,
-        "average time played in mode1": 3.84,
-        "played count in mode2": 0,
-        "total wins in mode2": 0,
-        "hints": 0,
-        "highest streak": 0
-    },
-    "playernum1": {
-        "played count in mode1": 1,
-        "best score in mode1": 0,
-        "average time played in mode1": 3.69,
-        "played count in mode2": 0,
-        "total wins in mode2": 0,
-        "hints": 0,
-        "highest streak": 0
-    },
-    "thiti": {
+    "mooham": {
         "played count in mode1": 2,
-        "best score in mode1": 1,
-        "average time played in mode1": 1.14,
+        "best score in mode1": 2,
+        "average time played in mode1": 49.48,
         "played count in mode2": 0,
         "total wins in mode2": 0,
         "hints": 0,
-        "highest streak": 0
+        "highest streak": 1
+    },
+    "eldlke": {
+        "played count in mode1": 1,
+        "best score in mode1": 5,
+        "average time played in mode1": 61.8,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 1,
+        "highest streak": 4
+    },
+    "omgsotird": {
+        "played count in mode1": 2,
+        "best score in mode1": 2,
+        "average time played in mode1": 49.62,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 2,
+        "highest streak": 2
+    },
+    "hamja": {
+        "played count in mode1": 2,
+        "best score in mode1": 4,
+        "average time played in mode1": 38.59,
+        "played count in mode2": 1,
+        "total wins in mode2": 1,
+        "hints": 3,
+        "highest streak": 3
     }
 }
