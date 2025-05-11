@@ -258,7 +258,7 @@ class Mode2(Mode):
 
         self.bot = bot
 
-        self.total_time = 30
+        self.total_time = 20
         self.elapsed_time = 0
 
         self.bot_x = self.screen_width // 2 + 394
