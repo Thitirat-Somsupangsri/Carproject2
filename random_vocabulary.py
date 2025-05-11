@@ -4,7 +4,7 @@ import csv
 
 class Vocabulary:
     def __init__(self, csv_file):
-        self.words = self.load_words(csv_file)
+        self.__words = self.load_words(csv_file)
 
     @staticmethod
     def load_words(csv_file):
@@ -22,9 +22,9 @@ class Vocabulary:
         return words
 
     def random_word(self):
-        word = random.choice(list(self.words.keys()))
+        word = random.choice(list(self.__words.keys()))
         return {
             'word': word,
-            'part_of_speech': self.words[word]['part_of_speech'],
-            'definition': self.words[word]['definition']
+            'part_of_speech': self.__words[word]['part_of_speech'],
+            'definition': self.__words[word]['definition']
         }

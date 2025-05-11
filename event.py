@@ -258,7 +258,7 @@ class Mode2(Mode):
 
         self.bot = bot
 
-        self.total_time = 20
+        self.total_time = 180
         self.elapsed_time = 0
 
         self.bot_x = self.screen_width // 2 + 394
@@ -302,7 +302,7 @@ class Mode2(Mode):
             self.user_input = ''
             self.bot.start_new_word(len(self.current_word['word']))
 
-        if self.player.score == 2:
+        if self.player.score == 10:
             self.winner = 'player'
             self.winner_timer += delta_time
             if self.winner_timer >= self.winner_delay:
