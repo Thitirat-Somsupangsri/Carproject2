@@ -2,7 +2,7 @@ import pygame as pg
 from player import Player, Bot, PlayerDataManager
 from config import Config
 from event import Mode1, Mode2
-
+from sfx import SoundEffects
 
 class Game:
     def __init__(self):
@@ -156,11 +156,21 @@ class Game:
 
     def run(self,status='new'):
         if status == 'new':
+            SoundEffects.get_instance().play("started")
             player_name, selected_mode = self.enter_name(), self.game_mode()
             self.player.name = player_name
+
         else:
             self.player.reset_player()
             selected_mode = self.game_mode()
+        manager = PlayerDataManager()
+
+        if str(self.player.name) in [str(key) for key in manager.data]:
+            self.player.hint_left = int(PlayerDataManager().get_data(self.player.name, 'hints'))
+            print(self.player.hint_left)
+        else:
+            self.player.hint_left = 0
+
         if selected_mode == 1:
             self.mode = Mode1(self.player, self.font, self.bg)
         elif selected_mode == 2:

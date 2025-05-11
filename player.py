@@ -13,10 +13,7 @@ class Player:
         self.target_position = None
         self.moving = False
         self.speed = 200
-        manager = PlayerDataManager()
         self.hint_left = 0
-        if self.name in manager.data:
-            self.hint_left = int(PlayerDataManager().get_data(self.name, 'hints'))
 
     def move(self):
         if not self.moving:
@@ -49,7 +46,7 @@ class Player:
 class Bot(Player):
     def __init__(self, name, car_image=None):
         super().__init__(name, car_image)
-        self.data_file = 'word_time_data.csv'
+        self.data_file = 'stats/word_time_data.csv'
         self.word_time_data = self.load_data()
         self.target_time = None
         self.current_time = 0
@@ -90,7 +87,7 @@ class Bot(Player):
 
 
 class PlayerDataManager:
-    def __init__(self, filename="player_data.json"):
+    def __init__(self, filename="stats/player_data.json"):
         self.filename = filename
         self.data = self.__load()
 

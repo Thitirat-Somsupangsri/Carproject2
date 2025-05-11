@@ -2,7 +2,7 @@ import csv
 import os
 
 
-def update_word_time_csv(word_length, time_taken, filename='word_time_data.csv'):
+def update_word_time_csv(word_length, time_taken, filename='stats/word_time_data.csv'):
     if not os.path.exists(filename):
         with open(filename, mode='w', newline='') as file:
             writer = csv.writer(file)

@@ -1,8 +1,8 @@
 {
     ";": {
-        "played count in mode1": 2,
+        "played count in mode1": 3,
         "best score in mode1": 2,
-        "average time played in mode1": 8.29,
+        "average time played in mode1": 6.48,
         "played count in mode2": 2,
         "total wins in mode2": 2,
         "hints": 0,
@@ -36,9 +36,9 @@
         "highest streak": 0
     },
     "k": {
-        "played count in mode1": 1,
+        "played count in mode1": 3,
         "best score in mode1": 0,
-        "average time played in mode1": 3.61,
+        "average time played in mode1": 6.47,
         "played count in mode2": 0,
         "total wins in mode2": 0,
         "hints": 0,
@@ -63,9 +63,45 @@
         "highest streak": 0
     },
     "j": {
-        "played count in mode1": 7,
+        "played count in mode1": 9,
+        "best score in mode1": 2,
+        "average time played in mode1": 8.54,
+        "played count in mode2": 1,
+        "total wins in mode2": 0,
+        "hints": 2,
+        "highest streak": 0
+    },
+    "joblaew": {
+        "played count in mode1": 1,
+        "best score in mode1": 0,
+        "average time played in mode1": 6.01,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 0,
+        "highest streak": 0
+    },
+    "onmg": {
+        "played count in mode1": 1,
+        "best score in mode1": 0,
+        "average time played in mode1": 3.84,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 0,
+        "highest streak": 0
+    },
+    "playernum1": {
+        "played count in mode1": 1,
+        "best score in mode1": 0,
+        "average time played in mode1": 3.69,
+        "played count in mode2": 0,
+        "total wins in mode2": 0,
+        "hints": 0,
+        "highest streak": 0
+    },
+    "thiti": {
+        "played count in mode1": 2,
         "best score in mode1": 1,
-        "average time played in mode1": 6.29,
+        "average time played in mode1": 1.14,
         "played count in mode2": 0,
         "total wins in mode2": 0,
         "hints": 0,

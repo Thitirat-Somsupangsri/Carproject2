@@ -1,7 +1,7 @@
 import random
 import time
 import pygame as pg
-
+from sfx import SoundEffects
 
 class WalkingProbs:
     def __init__(self, x, y, images, move_area, duration=5):
@@ -55,5 +55,6 @@ class WalkingProbs:
         if self.active and self.rect.collidepoint(pos):
             self.active = False
             self.clicked = True
+            SoundEffects.get_instance().play("clicked")
             return True
         return False

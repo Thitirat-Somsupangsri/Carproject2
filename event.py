@@ -5,6 +5,7 @@ from random_vocabulary import Vocabulary
 from bot_train import update_word_time_csv
 from prob_character import WalkingProbs
 from player import PlayerDataManager
+from sfx import SoundEffects
 import time
 import csv
 
@@ -52,6 +53,7 @@ class Mode:
 
     def event(self, event):
         if event.type == pg.KEYDOWN:
+            SoundEffects.get_instance().play("typing")
             if event.key == pg.K_RETURN:
                 self.check_answer()
             elif event.key == pg.K_BACKSPACE:
@@ -97,6 +99,7 @@ class Mode:
             time_taken = time.time() - self.answer_start_time
             update_word_time_csv(len(self.current_word['word']), time_taken)
             self.player.move()
+            SoundEffects.get_instance().play("move")
             self.waiting_for_flash = True
             return True
         else:
@@ -171,6 +174,7 @@ class Mode:
             else:
                 display_text += '_ '
 
+
         # input box
         input_box = pg.Rect((80, 550, 500, 70))
         pg.draw.rect(screen, (255, 255, 255), input_box)
@@ -207,6 +211,7 @@ class Mode1(Mode):
                 self.car_y = self.screen_height
 
         else:
+            SoundEffects.get_instance().play("beep")
             self.mistakes += 1
             self.streak = 0
             self.score_ratio = 1
@@ -218,7 +223,7 @@ class Mode1(Mode):
             self.stop()
 
     def time_played(self, duration):
-        with open('mode1_stats.csv', mode='a', newline='') as file:
+        with open('stats/mode1_stats.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([self.player.name, round(duration, 2),self.player.score])
 
@@ -289,6 +294,7 @@ class Mode2(Mode):
         self.player.update(delta_time)
 
         if bot_moved:
+            SoundEffects.get_instance().play("move")
             self.current_word = self.vocabulary.random_word()
             self.user_input = ''
             self.bot.start_new_word(len(self.current_word['word']))
